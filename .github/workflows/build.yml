@@ -1,0 +1,37 @@
+ name: Build RTL8188FU Module
+
+on:
+  workflow_dispatch:   # lo puedes lanzar manualmente desde GitHub
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Descargar kernel source (Samsung Galaxy A12, 4.19.111)
+        run: |
+          git clone --depth=1 https://github.com/Samsung/<repo-del-kernel>.git kernel
+
+      - name: Descargar driver RTL8188FU
+        run: |
+          git clone --depth=1 https://github.com/kelebek333/rtl8188fu.git driver
+
+      - name: Instalar toolchain
+        run: sudo apt-get install -y gcc-aarch64-linux-gnu make
+
+      - name: Compilar módulo
+        run: |
+          export ARCH=arm64
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          make -C kernel M=$PWD/driver modules
+
+      - name: Guardar artefacto
+        uses: actions/upload-artifact@v3
+        with:
+          name: rtl8188fu.ko
+          path: driver/*.ko
