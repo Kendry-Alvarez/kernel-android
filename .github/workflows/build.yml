@@ -1,7 +1,7 @@
- name: Build RTL8188FU Module
+name: Build RTL8188FU Module
 
 on:
-  workflow_dispatch:   # lo puedes lanzar manualmente desde GitHub
+  workflow_dispatch:
   push:
     branches: [ main ]
 
@@ -13,9 +13,10 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Descargar kernel source (Samsung Galaxy A12, 4.19.111)
+      - name: Descargar kernel source (Galaxy A12, 4.19.111)
         run: |
-          git clone --depth=1 https://github.com/Samsung/<repo-del-kernel>.git kernel
+          wget https://opensource.samsung.com/upload/SM-A125F_Opensource.zip -O kernel.zip
+          unzip kernel.zip -d kernel
 
       - name: Descargar driver RTL8188FU
         run: |
