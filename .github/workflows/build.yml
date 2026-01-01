@@ -1,4 +1,5 @@
-name: Build Kernel Module
+name: Build rtl8188fu module
+
 on: [push]
 
 jobs:
@@ -17,13 +18,13 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu make
 
       - name: Build kernel (to generate Module.symvers)
-        run: make -C kernel ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
+        run: make -C kernel ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=aarch64-linux-gnu-gcc -j$(nproc)
 
       - name: Build rtl8188fu module
-        run: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -C kernel M=$GITHUB_WORKSPACE/driver modules
+        run: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=aarch64-linux-gnu-gcc -C kernel M=$GITHUB_WORKSPACE/driver modules
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: rtl8188fu.ko
-          path: driver/rtl8188fu/rtl8188fu.ko
+          path: driver/rtl8188fu.ko
