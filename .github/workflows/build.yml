@@ -1,24 +1,21 @@
 name: Build rtl8188fu module
-
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
       - name: Clone kernel source
         run: git clone --depth=1 https://github.com/oscarpavon/Linux-SM-A127M.git kernel
 
       - name: Clone rtl8188fu driver
         run: git clone --depth=1 https://github.com/kelebek333/rtl8188fu.git driver
 
-      - name: Set up toolchain
+      - name: Install toolchain
         run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu make
 
-      - name: Build kernel (to generate Module.symvers)
-        run: make -C kernel ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=aarch64-linux-gnu-gcc -j$(nproc)
+      - name: Prepare kernel headers
+        run: make -C kernel ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=aarch64-linux-gnu-gcc modules_prepare
 
       - name: Build rtl8188fu module
         run: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=aarch64-linux-gnu-gcc -C kernel M=$GITHUB_WORKSPACE/driver modules
